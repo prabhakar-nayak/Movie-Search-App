@@ -17,8 +17,32 @@
         />
         <button id="searchButton">Search</button>
       </div>
+      <section class="favorites">
+        <div class="favorites-header">
+          <h2>Favorites</h2>
+          <button id="clearFavoritesButton" class="ghost-button">Clear all</button>
+        </div>
+        <div id="favoritesEmpty" class="favorites-empty">
+          No favorites yet. Save movies to see them here.
+        </div>
+        <div id="favoritesList" class="favorites-list"></div>
+      </section>
       <div id="results"></div>
-      <div id="movieDetails"></div>
+      <div id="pagination" class="pagination is-hidden">
+        <button id="prevPage" class="ghost-button">Previous</button>
+        <span id="pageInfo" class="page-info">Page 1</span>
+        <button id="nextPage" class="ghost-button">Next</button>
+      </div>
+      <div id="spinner" class="spinner is-hidden" role="status" aria-live="polite">
+        <span class="spinner-ring" aria-hidden="true"></span>
+        <span class="spinner-text">Loading…</span>
+      </div>
+    </div>
+    <div id="modalOverlay" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal">
+        <button id="modalClose" class="modal-close" aria-label="Close details">×</button>
+        <div id="modalContent" class="modal-content"></div>
+      </div>
     </div>
     <script src="script.js"></script>
   </body>
