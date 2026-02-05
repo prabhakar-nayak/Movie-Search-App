@@ -1,4 +1,7 @@
+// 🔑 OMDB API key
 const API_KEY = "b1b93f1f";
+
+// 🎯 Getting all required HTML elements
 const searchButton = document.getElementById("searchButton");
 const searchInput = document.getElementById("searchInput");
 const resultsDiv = document.getElementById("results");
@@ -16,13 +19,17 @@ const modalOverlay = document.getElementById("modalOverlay");
 const modalCloseButton = document.getElementById("modalClose");
 const modalContentEl = document.getElementById("modalContent");
 
+// 💾 LocalStorage key for favorites
 const FAVORITES_KEY = "favoriteMovies";
+
+// 📌 App state variables
 let favorites = loadFavorites();
 let currentQuery = "";
 let currentPage = 1;
 let totalResults = 0;
 const PAGE_SIZE = 10;
 
+// 🔄 Show loading spinner with message
 function showSpinner(message) {
   if (message) {
     spinnerTextEl.textContent = message;
@@ -30,10 +37,12 @@ function showSpinner(message) {
   spinnerEl.classList.remove("is-hidden");
 }
 
+// ❌ Hide loading spinner
 function hideSpinner() {
   spinnerEl.classList.add("is-hidden");
 }
 
+// 📥 Load favorite movies from localStorage
 function loadFavorites() {
   try {
     const raw = localStorage.getItem(FAVORITES_KEY);
@@ -44,14 +53,17 @@ function loadFavorites() {
   }
 }
 
+// 💾 Save favorite movies to localStorage
 function saveFavorites() {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
 }
 
+// ❤️ Check if movie is already in favorites
 function isFavorite(id) {
   return favorites.some((movie) => movie.imdbID === id);
 }
 
+// 🧹 Keep only required movie data
 function normalizeMovie(movie) {
   return {
     imdbID: movie.imdbID,
@@ -61,6 +73,7 @@ function normalizeMovie(movie) {
   };
 }
 
+// ➕➖ Add or remove movie from favorites
 function toggleFavorite(movie) {
   const exists = isFavorite(movie.imdbID);
   if (exists) {
@@ -72,6 +85,7 @@ function toggleFavorite(movie) {
   renderFavorites();
 }
 
+// 🖼️ Display favorite movies list
 function renderFavorites() {
   favoritesListEl.innerHTML = "";
   favoritesEmptyEl.style.display = favorites.length ? "none" : "block";
@@ -88,6 +102,8 @@ function renderFavorites() {
         <button class="favorite-view" data-id="${movie.imdbID}">View</button>
       </div>
     `;
+
+    // ❌ Remove from favorites
     item.querySelector(".favorite-remove").addEventListener("click", () => {
       favorites = favorites.filter(
         (itemMovie) => itemMovie.imdbID !== movie.imdbID,
@@ -96,6 +112,8 @@ function renderFavorites() {
       renderFavorites();
       updateFavoriteButtons(movie.imdbID);
     });
+
+    // 👀 View movie details
     item.querySelector(".favorite-view").addEventListener("click", () => {
       fetchMovieDetails(movie.imdbID);
     });
@@ -103,6 +121,7 @@ function renderFavorites() {
   });
 }
 
+// 🔄 Update all favorite buttons UI
 function updateFavoriteButtons(id) {
   const buttons = document.querySelectorAll(`[data-favorite-id="${id}"]`);
   buttons.forEach((button) => {
@@ -118,6 +137,8 @@ function updateFavoriteButtons(id) {
 
 // Search movie
 searchButton.addEventListener("click", startSearch);
+
+// 🧹 Clear all favorites
 clearFavoritesButton.addEventListener("click", () => {
   favorites = [];
   saveFavorites();
@@ -127,12 +148,16 @@ clearFavoritesButton.addEventListener("click", () => {
     button.textContent = "Save to Favorites";
   });
 });
+
+// ⬅️ Pagination previous page
 prevPageButton.addEventListener("click", () => {
   if (currentPage > 1) {
     currentPage -= 1;
     fetchSearchResults();
   }
 });
+
+// ➡️ Pagination next page
 nextPageButton.addEventListener("click", () => {
   const totalPages = Math.ceil(totalResults / PAGE_SIZE);
   if (currentPage < totalPages) {
@@ -140,6 +165,8 @@ nextPageButton.addEventListener("click", () => {
     fetchSearchResults();
   }
 });
+
+// ❌ Close modal
 modalCloseButton.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", (event) => {
   if (event.target === modalOverlay) {
@@ -152,12 +179,13 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+// 🔎 Start search when Enter key is pressed
 searchInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     startSearch();
   }
 });
-
+// 🌐 Search movies from OMDB API
 async function searchMovies() {
   const query = searchInput.value.trim();
   if (!query) return;
@@ -182,6 +210,7 @@ async function searchMovies() {
   }
 }
 
+// ▶️ Start a new search
 function startSearch() {
   const query = searchInput.value.trim();
   if (!query) return;
@@ -191,6 +220,7 @@ function startSearch() {
   fetchSearchResults();
 }
 
+// 🌐 Fetch movies from OMDB API
 async function fetchSearchResults() {
   if (!currentQuery) return;
   try {
@@ -216,7 +246,7 @@ async function fetchSearchResults() {
     resultsDiv.innerHTML = `<p>Something went wrong. Please try again later.</p>`;
   }
 }
-
+// 🔢 Update pagination controls based on current page and total results
 function updatePagination() {
   const totalPages = Math.ceil(totalResults / PAGE_SIZE);
   if (totalPages > 1) {
@@ -229,6 +259,7 @@ function updatePagination() {
   }
 }
 
+// 📃 Show movies on screen
 function displayMovies(movies) {
   hideSpinner();
   resultsDiv.innerHTML = "";
@@ -255,7 +286,7 @@ function displayMovies(movies) {
     resultsDiv.appendChild(movieItem);
   });
 }
-
+// 🌐 Fetch detailed movie info from OMDB API
 async function fetchMovieDetails(id) {
   try {
     showSpinner("Loading details…");
@@ -272,7 +303,7 @@ async function fetchMovieDetails(id) {
     openModal();
   }
 }
-
+// 📃 Show detailed movie info in modal
 function displayMovieDetails(movie) {
   const saved = isFavorite(movie.imdbID);
   modalContentEl.innerHTML = `
@@ -295,13 +326,14 @@ function displayMovieDetails(movie) {
   });
   openModal();
 }
-
+// 🔍 Open modal to show movie details
 function openModal() {
   modalOverlay.classList.remove("is-hidden");
 }
-
+// ❌ Close modal
 function closeModal() {
   modalOverlay.classList.add("is-hidden");
 }
 
+// 🏁 Initial render of favorites on page load
 renderFavorites();
